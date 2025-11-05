@@ -1,45 +1,31 @@
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../config/prisma";
 import { verifyAccessToken } from "../utils/jwt";
+import { prisma } from "../config/prisma";
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    username: string;
     email: string;
     role: string;
   };
 }
 
-export const protectRoute = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const protectRoute = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  const token = req.cookies?.jwt;
+  if (!token) return res.status(401).json({ message: "No access token provided" });
+
   try {
-    const token = req.cookies?.jwt;
-
-    if (!token) {
-      res.status(401).json({ message: "Unauthorized - No Token Provided" });
-      return;
-    }
-
     const decoded = verifyAccessToken(token);
-
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, username: true, email: true, role: true },
+      select: { id: true, email: true, role: true },
     });
 
-    if (!user) {
-      res.status(401).json({ message: "Unauthorized - User not found" });
-      return;
-    }
+    if (!user) return res.status(401).json({ message: "User not found" });
 
     req.user = user;
     next();
-  } catch (error: any) {
-    console.error("Error in protectRoute middleware:", error.message);
-    res.status(401).json({ message: "Unauthorized - Invalid or expired token" });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
