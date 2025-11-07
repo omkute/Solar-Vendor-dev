@@ -7,45 +7,60 @@ import {
   verifyRefreshToken,
 } from "../utils/jwt";
 import { addDays } from "date-fns";
+import { success } from "zod";
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-
-  const accessToken = generateAccessToken({ userId: user.id, role: user.role });
-  const refreshToken = generateRefreshToken({ userId: user.id, role: user.role });
-
-
-  await prisma.refreshToken.create({
-    data: {
-      token: refreshToken,
+  try {
+    const { email, password } = req.body;
+  
+    const user = await prisma.user.findUnique({ where: { email } });
+  
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+  
+    const accessToken = generateAccessToken({
       userId: user.id,
-      expiresAt: addDays(new Date(), 7), 
-    },
-  });
-
-  res
-    .cookie("jwt", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    })
-    .cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    })
-    .json({
-      message: "Login successful",
-      user: { id: user.id, email: user.email, role: user.role },
+      role: user.role,
     });
+  
+    const refreshToken = generateRefreshToken({
+      userId: user.id,
+      role: user.role,
+    });
+  
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: user.id,
+        expiresAt: addDays(new Date(), 7),
+      },
+    });
+  
+    return res
+      .cookie("jwt", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      })
+      .json({
+        success:true,
+        message: "Login successful",
+        user: { id: user.id, email: user.email, role: user.role },
+      });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      success:false,
+      message:"Internal server error"
+    })
+  }
 };
-
-
 
 export const refreshAccessToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies?.refreshToken;
@@ -61,10 +76,10 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     });
 
     if (!storedToken || storedToken.expiresAt < new Date()) {
-      return res.status(403).json({ message: "Refresh token expired or invalid" });
+      return res
+        .status(403)
+        .json({ message: "Refresh token expired or invalid" });
     }
-
-
 
     const newAccessToken = generateAccessToken({
       userId: decoded.userId,
@@ -82,4 +97,3 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     res.status(401).json({ message: "Invalid refresh token" });
   }
 };
-
