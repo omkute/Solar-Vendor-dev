@@ -5,7 +5,7 @@ import { login,signup } from "../controller/authController.js";
 const userRoute : IRouter = Router();
 
 //User Login
-userRoute.post("/", login);
+userRoute.post("/login", login);
 userRoute.post("/signup",signup)
 
 
