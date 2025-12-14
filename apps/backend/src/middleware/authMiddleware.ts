@@ -1,7 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { verifyAccessToken } from "../utils/jwt.js";
-import { prisma } from "../config/prisma.js";
-
+import {prisma} from "@repo/db"
 export interface AuthRequest extends Request {
   user?: {
     id: string;

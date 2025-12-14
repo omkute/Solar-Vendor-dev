@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { prisma } from "../config/prisma.js"; 
+import {prisma} from "@repo/db"
 
 // Create a new lead
 export const createLead = async (req: Request, res: Response, next: NextFunction) => {

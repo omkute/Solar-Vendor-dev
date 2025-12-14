@@ -1,6 +1,6 @@
 import {type Request,type Response } from "express";
 import bcrypt from "bcrypt";
-import { prisma } from "../config/prisma.js";
+import {prisma} from "@repo/db"
 import {
   generateAccessToken,
   generateRefreshToken,
