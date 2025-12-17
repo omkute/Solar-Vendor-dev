@@ -33,12 +33,7 @@ export class AuthService{
             throw new AuthError("User Already Exists!, try login", 401);
         }
 
-        const userToCreate: Omit<AuthR, "id"> = {
-      email: data.email,
-      username: data.username,
-      password: data.password, // hash in real app
-      role: data.role ?? "sales", // ✅ DEFAULT ROLE
-    };
+        const newUser = await this.authRepo.createUser(data)
 
         return{
             meaa:"signupsuccess"
