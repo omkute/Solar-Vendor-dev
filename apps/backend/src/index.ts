@@ -1,36 +1,57 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import leadRoute from "./routes/leadRoute.js";
-import userRoute from "./routes/userRoute.js";
+import "dotenv/config";
+import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import authRoute from "./modules/auth/auth.routes"
+import { errorMiddleware } from "./middlewares/error.middleware";
 
-dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 4000;
 
+
+// Middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: process.env.FRONTEND_URL || "http://localhost:4000",
     credentials: true,
   })
 );
-app.set("trust proxy", 1);
-app.use(cookieParser());
-app.use(express.json({ limit: "2mb" }));
 
-app.use((err:any, req:any, res:any, next:any) => {
-  console.error("Server Error:", err);
-  res.status(500).json({ message: "Internal Server Error" });
+
+
+// Health check
+app.get("/health", (_req, res) => {
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+
+  });
 });
 
-// Lead route
-app.use("/api/v1/leads", leadRoute);
 
-// User Route
-app.use("/api/v1/auth", userRoute);
+//auth 
+app.use("/auth", authRoute)
 
+
+// 404 handler
+app.use((_req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  console.log("SIGTERM received, shutting down gracefully...");
+  process.exit(0);
+});
+
+//Error Middleware
+app.use(errorMiddleware)
+
+// Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
-  console.log(PORT);
 });

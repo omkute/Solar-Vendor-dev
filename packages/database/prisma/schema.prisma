@@ -14,7 +14,7 @@ model User {
   email         String         @unique
   password      String
   leads         Lead[]
-  role          Roles
+  role          Roles          @default(sales)
   isApproved    Boolean        @default(false)
   refreshTokens RefreshToken[]
   createdAt     DateTime       @default(now())
@@ -23,10 +23,11 @@ model User {
   @@map("user")
 }
 
+//todo : replace employee with sales : done
 enum Roles {
-  ADMIN
-  MANAGER
-  EMPLOYEES
+  admin
+  manager
+  sales
 }
 
 model RefreshToken {

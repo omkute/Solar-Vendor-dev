@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config(); // Reads apps/backend/.env during dev
+dotenv.config(); 
 
 if (!process.env.DATABASE_URL) {
   console.error("❌ DATABASE_URL is not set!");
