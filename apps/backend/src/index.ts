@@ -21,6 +21,8 @@ app.use(
   })
 );
 
+//auth 
+app.use("/auth", authRoute)
 
 
 // Health check
@@ -33,8 +35,6 @@ app.get("/health", (_req, res) => {
 });
 
 
-//auth 
-app.use("/auth", authRoute)
 
 
 // 404 handler

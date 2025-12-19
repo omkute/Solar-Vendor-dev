@@ -1,18 +1,20 @@
-import { Express, Request, Response } from "express";
+import { Express, NextFunction, Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { loginSchema, signupSchema } from "./auth.schema";
 import { success } from "zod";
 
 
 export class AuthController{
-    constructor( private authService: AuthService){}
+    constructor(public  authService: AuthService){}
 
-    login = async ( req: Request, res: Response)=>{
+    login = async ( req: Request, res: Response, next: NextFunction)=>{
         try {
-        //parse input login data 
-        const data = loginSchema.parse(req.body);
+            
+            //parse input login data 
+            const data = loginSchema.parse(req.body);
+            
+            const result = await this.authService.login(data);
 
-        const result = await this.authService.login(data);
 
         res.status(200).json({
             success: true,
@@ -20,11 +22,11 @@ export class AuthController{
         })
             
         } catch (error) {
-            console.log(error);
-            
+            next(error)
         }
     }
-    signUp = async ( req: Request, res: Response)=>{
+
+    signUp = async ( req: Request, res: Response, next: NextFunction)=>{
         try {
         //parse input signup data
         const data = signupSchema.parse(req.body);
@@ -36,7 +38,7 @@ export class AuthController{
             data: result
         })
         } catch (error) {
-            console.log(error);
+            next(error)
             
         }
     }

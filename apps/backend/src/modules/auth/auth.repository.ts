@@ -1,10 +1,10 @@
-import { prisma } from "@repo/db";
+import { Prisma, prisma, Roles } from "@repo/db";
 
 export interface AuthUser{
     email: string;
     username: string;
     password: string;
-    role: "admin" | "sales" | "manager"
+    role: Roles;
 }
 
 export class AuthRepository{
@@ -19,9 +19,9 @@ export class AuthRepository{
                 email: data.email,
                 username: data.username,
                 password: data.password,
-                ...(data.role && { role:data.role}),
+                role: data.role
             },
         })
     }
-    
+
 }   

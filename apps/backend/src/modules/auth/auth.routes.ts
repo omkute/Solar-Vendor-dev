@@ -12,5 +12,13 @@ const authController = new AuthController(authService);
 
 router.post("/login", authController.login)
 router.post("/signup", authController.signUp)
+router.get("/check",() => {
+  console.log("Route is working !!!");
+  return{
+  message: "Route is working !!!"
+
+  }
+  
+})
 
 export default router;

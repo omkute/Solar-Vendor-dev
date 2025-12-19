@@ -272,7 +272,7 @@ export type UserCreateInput = {
   username: string
   email: string
   password: string
-  role: $Enums.Roles
+  role?: $Enums.Roles
   isApproved?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -285,7 +285,7 @@ export type UserUncheckedCreateInput = {
   username: string
   email: string
   password: string
-  role: $Enums.Roles
+  role?: $Enums.Roles
   isApproved?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -324,7 +324,7 @@ export type UserCreateManyInput = {
   username: string
   email: string
   password: string
-  role: $Enums.Roles
+  role?: $Enums.Roles
   isApproved?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -439,7 +439,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   username: string
   email: string
   password: string
-  role: $Enums.Roles
+  role?: $Enums.Roles
   isApproved?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -451,7 +451,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   username: string
   email: string
   password: string
-  role: $Enums.Roles
+  role?: $Enums.Roles
   isApproved?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -503,7 +503,7 @@ export type UserCreateWithoutLeadsInput = {
   username: string
   email: string
   password: string
-  role: $Enums.Roles
+  role?: $Enums.Roles
   isApproved?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -515,7 +515,7 @@ export type UserUncheckedCreateWithoutLeadsInput = {
   username: string
   email: string
   password: string
-  role: $Enums.Roles
+  role?: $Enums.Roles
   isApproved?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
